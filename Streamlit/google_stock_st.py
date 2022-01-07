@@ -3,13 +3,8 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-st.write("""
-### Simple streamlit app
-
-This shows the **GOOGLE** stock pricing 101
-
-""")
-tickerSymbol = 'GOOGL'
+st.header('APPLE STOCK PRICING')
+tickerSymbol = 'AAPL'
 tickerData = yf.Ticker(tickerSymbol)
 tickerDf = tickerData.history(period='1d', start='2010-5-31', end='2020-5-31')
 

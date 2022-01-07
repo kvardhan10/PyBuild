@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
-import numpy as np
+# import numpy as np
 from matplotlib import pyplot as plt
 import  wikipedia
 import yfinance as yf
