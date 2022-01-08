@@ -1,15 +1,30 @@
 #views.py basically draws routes around how the users can taverse through the application. From login to welcome, welcome to home, home to logout etc.
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, flash
 from flask_login import login_required, current_user
-
+from .models import Note
+from . import db
 
 views = Blueprint('views', __name__)
 
 #first view/route
 # this will work when the '/' is called by the user in the browser. So, technically the home page
-@views.route('/')
+@views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    if request.method == 'POST':
+        note = request.form.get('note')
+
+        if len(note) < 1:
+            flash('Too short!', category='error')
+        else:
+            new_note = Note(data=note, user_id=current_user.id)
+            db.session.add(new_note)
+            db.session.commit()
+            flash('Note added!', category='success')
+
+
+
+
     return render_template("home.html", user=current_user)
 #register this view in init.py
