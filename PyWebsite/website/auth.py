@@ -21,14 +21,14 @@ def login():
                 #checks user.password(from the table) and password(input given by user) <--> as good as strcmp(s1,s2)
                 flash('Logged in successfully', category='success')
                 login_user(user, remember=True)
-                redirect(url_for('views.home'))
+                return redirect(url_for('views.home'))
             else:
                 flash('Incorrect password, try again', category='error')
         else:
             flash('Email does not exist', category='error')
 
 
-    return render_template("login.html")
+    return render_template("login.html", user=current_user)
 
 @auth.route('/logout')
 @login_required
@@ -61,8 +61,9 @@ def sign_up():
             #column_name = variable
             db.session.add(new_user)
             db.session.commit()
-            login_user(user, remember=True)
+            login_user(new_user, remember=True)
             flash('Account created!', category='success')
-            return redirect(url_for('views.home')) # views-> bluprint and home-> functionName
+            return redirect(url_for('views.home'))
+            # views-> bluprint and home-> functionName
 
-    return render_template("sign_up.html")
+    return render_template("sign_up.html", user=current_user)
