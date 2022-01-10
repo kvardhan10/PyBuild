@@ -1,8 +1,8 @@
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
-import time as tm
 from matplotlib import pyplot as plt
+import time as tm
 import  wikipedia
 import yfinance as yf
 import pandas as pd
@@ -77,16 +77,27 @@ def weather():
         st.metric("Temperature is", temp)
         st.metric("Time is ", time)
         st.metric("Sky Description: ", sky)
-        # st.write(other_data)
 
 def stocks():
-    st.header('STOCK PRICING 101')
+    st.header('STOCK PRICING')
     tickerSymbol = st.selectbox('Pick one', ['AAPL', 'MSFT', 'AMZN', 'TSLA', 'GOOGL', 'FB', 'NVDA', 'JPM', 'BAC', 'ADBE', 'NFLX', 'PFE', 'DIS' ,'WMT'])
-    tickerData = yf.Ticker(tickerSymbol)
-    tickerDf = tickerData.history(period='1d', start='2010-5-31', end='2020-5-31')
+
+
+    start = st.date_input('Enter start date')
+    end = st.date_input('Enter end date')
 
     with st.spinner(text='In progress'):
         tm.sleep(3)
+
+        tickerData = yf.Ticker(tickerSymbol)
+        tickerDf = tickerData.history(period='1d', start=start, end=end)
+        current_price = tickerData.info['currentPrice']
+        day_low = tickerData.info['dayLow']
+        day_high = tickerData.info['dayHigh']
+        st.metric(label="Current value (in USD)", value=current_price)
+        st.metric(label="Day High", value=day_high, delta=(current_price-day_high))
+        st.metric(label="Day Low", value=day_low, delta=(current_price-day_low))
+
         st.write("""
     ### Closing price
     """)
@@ -122,10 +133,17 @@ def stocks():
     """)
         tickerData.recommendations
 
-        st.write("""
-    ### Company Data
-    """)
-        tickerData.info
+    #     st.write("""
+    # ### Company Data
+    # """)
+    #     tickerData.info
+
+        qty = [tickerData.info['totalCash'], tickerData.info['totalDebt'], tickerData.info['totalRevenue']]
+        of = ['Total Cash', 'Total Debt', 'Total Revenue']
+        explode = (0.1, 0.1, 0.1)
+        fig1, ax1 = plt.subplots()
+        ax1.pie(qty, explode=explode, labels=of, autopct='%1.1f%%', radius=2)
+        st.pyplot(fig1)
 
 def horoscope():
     st.subheader('Horoscope')
