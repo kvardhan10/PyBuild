@@ -3,9 +3,8 @@ from bs4 import BeautifulSoup
 import smtplib
 import time
 
-url = #Amazon_product_url
-
-headers = {"User-Agent": #user-agent}
+url = #Amazon product url
+headers = {"User-Agent": #user agent}
 
 def check_price():
     page = requests.get(url, headers=headers)
@@ -16,7 +15,7 @@ def check_price():
     price = soup.find('span', {'class': 'a-price-whole'}).get_text()
     converted_price = float(price.replace('.', '').replace(',','').strip())
 
-    if converted_price < 10000:
+    if converted_price < 3500:
         send_mail()
 
     print(title.strip())
@@ -28,12 +27,12 @@ def send_mail():
     server.starttls()
     server.ehlo()
 
-    server.login(#sender mail address , #app password)
+    server.login(#sender email ID , #app password)
 
     subject = 'Price fell down!'
     body = 'Check out the Amazon link' + url
     msg = f'Subject: {subject}\n\n{body}'
-    server.sendmail(#sender mail address, #receiver mail address, msg)
+    server.sendmail(#receiver email ID, #receiver email ID, msg)
     print('Email sent!')
     server.quit()
 
