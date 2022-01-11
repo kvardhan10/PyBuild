@@ -158,13 +158,17 @@ def stocks():
 
         for row in news_table.findAll('tr'):
             title = row.a.text
+            atag = row.a
             date_data = row.td.text.split(' ')
             if len(date_data) == 1:
                 time = date_data[0]
             else:
                 date = date_data[0]
                 time = date_data[1]
+            link = atag['href']
             st.write(tickerSymbol + " " + date + " " + time + " " + title)
+            st.write(link)
+            st.markdown("""---""")
 
 def horoscope():
     st.subheader('Horoscope')
