@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 from matplotlib import pyplot as plt
+from urllib.request import urlopen, Request
 import time as tm
 import  wikipedia
 import yfinance as yf
@@ -128,10 +129,10 @@ def stocks():
     """)
         st.line_chart(tickerDf.Dividends)
 
-        st.write("""
-    ### Recommendations
-    """)
-        tickerData.recommendations
+    #     st.write("""
+    # ### Recommendations
+    # """)
+    #     tickerData.recommendations
 
     #     st.write("""
     # ### Company Data
@@ -144,6 +145,26 @@ def stocks():
         fig1, ax1 = plt.subplots()
         ax1.pie(qty, explode=explode, labels=of, autopct='%1.1f%%', radius=2)
         st.pyplot(fig1)
+
+        st.subheader('What\'s new?')
+        finviz_url = 'https://finviz.com/quote.ashx?t='
+        url = finviz_url + tickerSymbol
+
+        req = Request(url=url, headers={'user-agent': 'my-app'})
+        response = urlopen(req)
+
+        html = BeautifulSoup(response, features='html.parser')
+        news_table = html.find(id='news-table')
+
+        for row in news_table.findAll('tr'):
+            title = row.a.text
+            date_data = row.td.text.split(' ')
+            if len(date_data) == 1:
+                time = date_data[0]
+            else:
+                date = date_data[0]
+                time = date_data[1]
+            st.write(tickerSymbol + " " + date + " " + time + " " + title)
 
 def horoscope():
     st.subheader('Horoscope')
