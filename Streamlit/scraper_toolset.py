@@ -7,6 +7,8 @@ import time as tm
 import  wikipedia
 import yfinance as yf
 import pandas as pd
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+# nltk.downloader.download('vader_lexicon')
 
 st.title('Web Scraping Toolsets')
 
@@ -155,6 +157,7 @@ def stocks():
 
         html = BeautifulSoup(response, features='html.parser')
         news_table = html.find(id='news-table')
+        parsed_data = []
 
         for row in news_table.findAll('tr'):
             title = row.a.text
@@ -168,6 +171,20 @@ def stocks():
             link = atag['href']
             st.write(tickerSymbol + " " + date + " " + time + " " + title)
             st.write(link)
+            parsed_data.append([tickerSymbol,date,time,title])
+            df=pd.DataFrame(parsed_data,columns=['tickerSymbol','date','time','title'])
+            vader=SentimentIntensityAnalyzer()
+            f=lambda title: vader.polarity_scores(title)['compound']
+            df['compound']=df['title'].apply(f)
+            st.write(df.head())
+            df['date']=pd.to_datetime(df.date).dt.date
+            plt.figure(figsize=(6,4))
+            mean_df=df.groupby(['tickerSymbol','date']).mean()
+            mean_df=mean_df.unstack()
+            mean_df=mean_df.xs('compound',axis="columns").transpose()
+            # fig, ax = plt.subplots()
+            # ax = mean_df.plot(kind='bar')
+            # st.pyplot(fig)
             st.markdown("""---""")
 
 def horoscope():
