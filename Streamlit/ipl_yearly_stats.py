@@ -4,6 +4,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
+st.set_page_config(layout='wide')
+
 st.markdown("""
 # IPL PLAYER STATS BY SEASON
 - Data from [IPLT20.com](https://www.iplt20.com/)
