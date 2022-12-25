@@ -1,0 +1,138 @@
+hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar -input /user/cloudera/input -output /user/cloudera/output -mapper /home/cloudera/mapper.py -reducer /home/cloudera/reducer.py
+
+WORD COUNT
+
+#!/usr/bin/python
+import sys
+import string
+for line in sys.stdin:
+	words=line.split(" ")
+	for word in words:
+		word=word.strip("\n")
+		if word:
+			print(word+":1")
+
+#!/usr/bin/python
+import sys
+import string
+
+oldkey=""
+count=0
+
+for line in sys.stdin:
+	words=line.split(":")
+	key=words[0].strip()
+	val=words[1].strip()
+	if(oldkey==""):
+		oldkey=key
+	if(oldkey!=key):
+		print(oldkey+":"+str(count))
+		oldkey=key
+		count=0
+	count=count+1
+
+-------------------------------------------------------------------------
+
+SALES
+
+#!/usr/bin/python
+import sys
+for line in sys.stdin:
+	data-line.strip().split("\t") 
+	if len(data)==6: 
+	date, time, store, item, cost, payment=data 
+	print("{0}\t{1}".format(store, cost))
+
+#!/usr/bin/python
+import sys
+salestotal=0
+oldkey=None
+
+for line in sys.stdin:
+	data_mapped=line.strip().split("\t")
+	if len(data_mapped) !=2:
+		continue
+	thiskey, thissale=data_mapped
+	if oldkey and oldkey!=thiskey:
+		print(oldkey, "\t", salestotal)
+		oldkey=thiskey
+	salestotal=0
+	oldkey=thiskey
+	salestotal+= float(thissale)
+if oldkey!=None:
+	print (oldkey, "\t", salestotal)
+
+-------------------------------------------------------------------------
+
+PASSWORD
+
+#!/usr/bin/python
+
+import sys
+for line in sys.stdin:
+	data=line.strip().split(":")
+	if len(data)==7:
+		(username, epasswd, uid, ugit, fname, uhdir,logshell)=data
+		print("{0}\t{1}".format(username, epasswd))
+
+#!/usr/bin/python
+import sys
+import string
+
+oldKey = None
+passwd= None
+for line in sys.stdin:
+	data_mapped = line.strip().split(":")
+	if len(data_mapped) !=2:
+		continue
+	thisKey, thispass = data_mapped
+	if oldKey and oldKey!=thisKey:
+		print(oldkey,"\t", passwd) 
+		oldKey=thisKey
+		passwd=thispass
+	oldKey=thisKey
+if oldKey!= None:
+	print(oldKey,"\t", passwd)
+
+-------------------------------------------------------------------------
+
+HIVE
+
+hdfs dfs -put passwd.txt /user/cloudera
+beeline -u jdbc:hive2://
+
+[2] Run HIVE commands:
+CREATE TABLE userinfo ( uname STRING, pswd STRING, uid INT, gid INT, fullname STRING, hdir STRING, shell STRING ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ':' STORED AS TEXTFILE;
+LOAD DATA INPATH '/tmp/passwd' OVERWRITE INTO TABLE userinfo;
+SELECT uname, fullname, hdir FROM userinfo ORDER BY uname ;
+
+[2.1] 
+create table student(sname STRING, sid INT, cgpa FLOAT);
+insert into student values('akash', 001, 8.5);
+insert into student values('balram', 002, 9.0);
+
+select * from student where cgpa > 8.7 order by cgpa desc;
+
+[3] To exit out of beeline:
+!q
+
+-------------------------------------------------------------------------
+
+PIG
+
+pig -x local
+
+cp Downloads/abc.csv abc.txt [copies files from downloads to home/cloudera]
+
+data = LOAD 'imdb.txt' as (text:Chararray);
+
+A = LOAD 'imdb.txt' using PigStorage(',');
+
+B = foreach A generate $1, $2;
+
+dump B;
+STORE B into 'userinfo.out'; [if want to store]
+
+filter_data = FILTER student_details BY city == 'Chennai';
+limited = LIMIT filter_data 5;
+dump limited;
